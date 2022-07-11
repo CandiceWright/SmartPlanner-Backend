@@ -27,6 +27,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
+//for sending mail
+var nodemailer = require('nodemailer');
+
 function listen() {
     console.log("listening on " + server.address().port); //server waiting for connections
 }
@@ -259,6 +262,178 @@ function logout(request, response) {
     response.statusCode = 200;
     response.send("logout successful");
 
+}
+
+/************* Forgot Username/Password ******************/
+
+app.post('/forgotPass', forgotPassword);
+function forgotPassword(request, response){
+  data = request.body;
+  var email = data.email;
+  //get their email
+  var query = "SELECT * FROM Users WHERE email = " + "'" + email + "'";
+  con.query(query, function(err, result, fields){
+    if (!err){
+      if (result.length == 0){ //no user
+        response.setHeader('Access-Control-Allow-Origin', '*');
+        response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+        response.statusCode = 200;
+        response.send("no user exists");
+      }
+      else {
+        //var email = result[0].email;
+        //generate random code
+         var code = Math.floor(100000 + Math.random() * 900000)
+         var encryptCode = encrypt(code.toString())
+        //send email
+        var transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: 'noreply@thevshoot.com',
+            pass: 'vS8535bl@nk'
+          }
+        });
+
+        emailMsg = 'Here is your unique code for reseting your password: ' + code + '. Navigate back to the app and enter this code to complete your password reset.'
+
+        var mailOptions = {
+          from: 'noreply@thevshoot.com',
+          to: email,
+          subject: 'Another Planit Password Reset',
+          text: emailMsg
+        };
+
+        transporter.sendMail(mailOptions, function(error, info){
+          if (error) {
+            console.log(error);
+            response.setHeader('Access-Control-Allow-Origin', '*');
+            response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+            response.statusCode = 200;
+            response.send("could not send email");
+          } else {
+            //save code to db
+            var pinCreatedDate = new Date()
+            pinCreatedDateStr = pinCreatedDate.toString()
+            var query = "UPDATE Users SET pin = '" + encryptCode + "' , pinCreationDate = '" + pinCreatedDateStr + "' " + "WHERE email = '" + email + "'";
+            //var query = "UPDATE Users SET pin = '" + code + "'" + " WHERE username = '" + username + "'";
+            console.log(query)
+            con.query(query, function(err2, result2, field2){
+              if (!err2){
+                console.log(result2); //for now just log result to see format
+                console.log('Email sent: ' + info.response);
+                response.setHeader('Access-Control-Allow-Origin', '*');
+                response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                response.statusCode = 200;
+                response.send("email successfully sent");
+              }
+              else {
+                console.log(err2);
+                response.setHeader('Access-Control-Allow-Origin', '*');
+                response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                response.statusCode = 404;
+                response.send("server trouble");
+              }
+            })
+
+          }
+        });
+      }
+    }
+    else {
+      //console.log("I had an error")
+      console.log(err);
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+      response.statusCode = 404;
+      response.send("failed to get username");
+    }
+  })
+}
+
+
+app.post('/user/pin/validate', validatePin);
+function validatePin(request,response){
+  console.log("I am in get userId function");
+  var data = request.body
+  var email = data.email
+  var givenPin = data.pin
+  //con.connect(function(err){
+  var query = "SELECT * FROM Users WHERE email = " + "'" + email + "'";
+  con.query(query, function(err2, result, fields){
+    if (!err2){
+      //console.log("I had no error")
+      console.log(result)
+      var pin = result[0].pin;
+      if (decrypt(givenPin, pin)){
+        //check if its expired
+        var pinCreated = result[0].pinCreationDate;
+        var storedDate = new Date(pinCreated)
+        var expiredDate = storedDate
+        expiredDate.setHours(storedDate.getHours() + 1);
+        var currentDate = new Date()
+        if (currentDate > expiredDate){
+          //expired
+          response.setHeader('Access-Control-Allow-Origin', '*');
+          response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+          response.statusCode = 200;
+          response.send("pin expired");
+        }
+        else {
+          //all good
+          response.setHeader('Access-Control-Allow-Origin', '*');
+          response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+          response.statusCode = 200;
+          response.send("correct pin");
+        }
+      }
+      else {
+        response.setHeader('Access-Control-Allow-Origin', '*');
+        response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+        response.statusCode = 200;
+        response.send("incorrect pin");
+      }
+      
+    }
+    else {
+      //console.log("I had an error")
+      console.log(err2);
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+      response.statusCode = 404;
+      response.send("Server fail");
+    }
+  })
+  //})
+}
+
+app.post('/user/password', changePassword);
+function changePassword(request, response){
+
+  var data = request.body;
+  var email = data.email;
+  var newPass = data.newPass; 
+  console.log(newPass)
+  encryptedPass = encrypt(newPass);
+  //console.log("in change password with user: " + data.username)
+
+  var query = "UPDATE Users SET password = '" + encryptedPass + "'" + "WHERE email = '" + email + "'";
+
+  con.query(query, function(err, result, field){
+    if (!err){
+      console.log(result); //for now just log result to see format
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+      response.statusCode = 200;
+      response.send("password updated successfully");
+    }
+    else {
+      console.log(err);
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+      response.statusCode = 404;
+      response.send("password could not be updated");
+    }
+  }) 
 }
 
 /****************** Update User Info Routes **********************/
