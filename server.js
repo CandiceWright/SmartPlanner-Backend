@@ -152,13 +152,14 @@ function signUp(request, response) {
     var email = data.email;
     var planitName = data.planitName;
     var didStartPlanningTomorrow = data.didStartPlanningTomorrow;
+    var profileImage = data.profileImage;
     //var firstName = data.firstName;
     //var lastName = data.lastName;
     //var phoneNumber = data.phoneNumber;
     //var colorTheme = data.colorTheme;
     //var assistantCharacter = data.assistantCharacter;
 
-    var query1 = "INSERT INTO Users (email, password, planitName, didStartPlanningTomorrow) VALUES (" + "'" + email + "'," + "'" + encryptedPass + "'," + "'" + planitName + "'," + didStartPlanningTomorrow + ");"
+    var query1 = "INSERT INTO Users (email, password, planitName, didStartPlanningTomorrow, profileImage) VALUES (" + "'" + email + "'," + "'" + encryptedPass + "'," + "'" + planitName + "'," + didStartPlanningTomorrow + "," + "'" + profileImage +"');"
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
