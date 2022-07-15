@@ -518,6 +518,32 @@ function updateTheme(request, response){
 
 }
 
+app.patch('/spacetheme', updateSpaceTheme);
+function updateSpaceTheme(request, response){
+    var data = request.body;
+    var image = data.image;
+    var email = data.email;
+
+    var query = `UPDATE Users SET spaceTheme = '${image}' WHERE email = '${email}';`
+    con.query(query, function(err, result, field){
+        if (!err){
+          console.log(result);
+          response.setHeader('Access-Control-Allow-Origin', '*');
+                    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                    response.statusCode = 200;
+          response.send("");
+        }
+        else {
+          console.log(err);
+          response.setHeader('Access-Control-Allow-Origin', '*');
+                    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                    response.statusCode = 404;
+          response.send("unsuccessful");
+        }
+      })
+
+}
+
 
 /****************** Goals Routes **********************/
 
