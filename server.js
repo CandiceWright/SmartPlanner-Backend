@@ -540,6 +540,31 @@ function updateTheme(request, response){
 
 }
 
+app.patch('/user/profileimage', updateProfileImage);
+function updateProfileImage(request, response){
+    var data = request.body;
+    var image = data.image;
+    var id = data.id;
+
+    var query = `UPDATE Users SET profileImage = '${image}' WHERE id = ${id};`
+    con.query(query, function(err, result, field){
+        if (!err){
+          console.log(result);
+          response.setHeader('Access-Control-Allow-Origin', '*');
+                    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                    response.statusCode = 200;
+          response.send("");
+        }
+        else {
+          console.log(err);
+          response.setHeader('Access-Control-Allow-Origin', '*');
+                    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                    response.statusCode = 404;
+          response.send("unsuccessful");
+        }
+      })
+}
+
 app.patch('/spacetheme', updateSpaceTheme);
 function updateSpaceTheme(request, response){
     var data = request.body;
@@ -563,7 +588,6 @@ function updateSpaceTheme(request, response){
           response.send("unsuccessful");
         }
       })
-
 }
 
 
