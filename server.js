@@ -17,8 +17,8 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
 // Certificate
-const privateKey = fs.readFileSync('/etc/letsencrypt/live/serve-anotherplanit.com/fullchain.pem', 'utf8');
-const certificate = fs.readFileSync('/etc/letsencrypt/live/serve-anotherplanit.com/privkey.pem', 'utf8');
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/serve-anotherplanit.com/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/serve-anotherplanit.com/fullchain.pem', 'utf8');
 
 const credentials = {
   key: privateKey,
