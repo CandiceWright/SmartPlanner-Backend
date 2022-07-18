@@ -1,38 +1,48 @@
-//server setup 
 // var express = require('express');
-// var app = express(); 
+// const app = express();
 // var server = require('http').Server(app);
 // var port = process.env.PORT || 7343;
+// var server = app.listen(port, listen);
+// var bodyParser = require('body-parser');
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
 
-// //var server = app.listen(7343, listen); 
-// //server.listen(port, listen);
-// server.listen(port, listen);
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
+const express = require('express');
 
-// function listen(){
-//   console.log("listening on " + server.address().port); //server waiting for connections
-//}
-
-// const fs = require('fs');
-// const http = require('http');
-// const https = require('https');
-// const express = require('express');
-
-var express = require('express');
 const app = express();
-var server = require('http').Server(app);
-var port = process.env.PORT || 7343;
-var server = app.listen(port, listen);
 var bodyParser = require('body-parser');
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
+// Certificate
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/serve-anotherplanit.com/fullchain.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/serve-anotherplanit.com/privkey.pem', 'utf8');
 
-//for sending mail
-var nodemailer = require('nodemailer');
+const credentials = {
+  key: privateKey,
+  cert: certificate
+};
+
+// Starting both http & https servers
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
+
+httpServer.listen(7342, () => {
+  console.log('HTTP Server running on port 7342');
+});
+
+httpsServer.listen(7343, () => {
+  console.log('HTTPS Server running on port 7343');
+});
 
 function listen() {
     console.log("listening on " + server.address().port); //server waiting for connections
 }
+
+//for sending mail
+var nodemailer = require('nodemailer');
 
 //database setup
 var mysqldb = require('mysql');
