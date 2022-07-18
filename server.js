@@ -546,7 +546,7 @@ function updateProfileImage(request, response){
     var image = data.image;
     var id = data.id;
 
-    var query = `UPDATE Users SET profileImage = '${image}' WHERE id = ${id};`
+    var query = `UPDATE Users SET profileImage = '${image}' WHERE userId = ${id};`
     con.query(query, function(err, result, field){
         if (!err){
           console.log(result);
