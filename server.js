@@ -590,6 +590,88 @@ function updateSpaceTheme(request, response){
       })
 }
 
+/********** Stories Routes  ************/
+
+app.get('/user/:userId/stories', getAllStories);
+function getAllStories(request, response){
+    id = request.params.userId;
+    con.connect(function (err) {
+        var query1 = `SELECT * FROM Stories WHERE userId = ${id};`
+        con.query(query1, function (err2, result, fields) {
+            if (!err2) {
+                response.setHeader('Access-Control-Allow-Origin', '*');
+                response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                response.statusCode = 200
+                console.log(result);
+                response.send(result);
+            }
+            else {
+                console.log(err2);
+                response.setHeader('Access-Control-Allow-Origin', '*');
+                response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                response.statusCode = 404;
+                response.send("failed");
+            }
+        });
+    });
+}
+
+app.post('/user/stories', createStory);
+function createStory(request, response){
+    var data = request.body;
+    var userId = data.userId;
+    var date = data.date;
+    var video = data.url;
+    var thumbnail = data.thumbnail;
+
+    var query1 = "INSERT INTO Stories (userId, date, videoUrl, thumbnail) VALUES (" + userId + ",'" + date + "'," + "'" + type + "'," + "'" + video + "'," + "'" + thumbnail + "');"
+    con.query(query1, function (err1, result, fields) {
+
+        if (!err1) {
+            console.log(result);
+            response.setHeader('Access-Control-Allow-Origin', '*');
+                    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                    response.statusCode = 200;
+                    //response.statusMessage = userId;
+                    response.send(result);
+                    //response.sendStatus(200);
+
+        }
+        else {
+            response.setHeader('Access-Control-Allow-Origin', '*');
+            // // Request methods you wish to allow
+            response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+            response.statusCode = 500;
+            console.log(err1);
+            response.send("error creating story");
+        }
+    });
+}
+
+app.delete('/user/stories/:id', deleteStory);
+function deleteStory(request, response){
+  var storyId = request.params.id;
+  
+  var query = `DELETE FROM Stories WHERE sttoryId = ${storyId};`
+  
+  con.query(query, function(err, result, field){
+    if (!err){
+        console.log(result);
+        response.setHeader('Access-Control-Allow-Origin', '*');
+        response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+        response.statusCode = 200;         
+        response.send("story successfully deleted");
+    }
+    else {
+      console.log(err);
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      // // Request methods you wish to allow
+      response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+      response.statusCode = 500;
+      response.send("story deletion was unsuccessful");
+    }
+  })
+}
 
 /****************** Goals Routes **********************/
 
