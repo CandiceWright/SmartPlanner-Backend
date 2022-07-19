@@ -652,7 +652,7 @@ app.delete('/user/stories/:id', deleteStory);
 function deleteStory(request, response){
   var storyId = request.params.id;
   
-  var query = `DELETE FROM Stories WHERE sttoryId = ${storyId};`
+  var query = `DELETE FROM Stories WHERE storyId = ${storyId};`
   
   con.query(query, function(err, result, field){
     if (!err){
