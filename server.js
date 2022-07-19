@@ -624,7 +624,7 @@ function createStory(request, response){
     var video = data.url;
     var thumbnail = data.thumbnail;
 
-    var query1 = "INSERT INTO Stories (userId, date, videoUrl, thumbnail) VALUES (" + userId + ",'" + date + "'," + "'" + type + "'," + "'" + video + "'," + "'" + thumbnail + "');"
+    var query1 = "INSERT INTO Stories (userId, date, videoUrl, thumbnail) VALUES (" + userId + ",'" + date + "'," + "'" + video + "'," + "'" + thumbnail + "');"
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
