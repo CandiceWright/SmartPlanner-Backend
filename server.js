@@ -514,6 +514,33 @@ function updatePlanitName(request, response){
 
 }
 
+app.patch('/user/inwardvideo', updateInwardVideo);
+function updateInwardVideo(request, response){
+    var data = request.body;
+    var userId = data.userId;
+    var inwardVideo = data.inwardVideo;
+  
+    con.connect(function (err) {
+        var query1 = `UPDATE Users SET inwardVideoUrl = '${inwardVideo}' WHERE userId = ${userId};`
+        con.query(query1, function (err2, result, fields) {
+            if (!err2) {
+                response.setHeader('Access-Control-Allow-Origin', '*');
+                response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                console.log(result);
+                response.sendStatus(200)
+            }
+            else {
+                console.log(err2);
+                response.setHeader('Access-Control-Allow-Origin', '*');
+                response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                response.statusCode = 404;
+                response.send("planit name taken");
+            }
+        });
+    });
+
+}
+
 app.patch('/theme', updateTheme);
 function updateTheme(request, response){
     var data = request.body;
