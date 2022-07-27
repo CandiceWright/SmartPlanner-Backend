@@ -511,9 +511,7 @@ function updatePlanitName(request, response){
             }
         });
     });
-
 }
-
 app.patch('/user/inwardvideo', updateInwardVideo);
 function updateInwardVideo(request, response){
     var data = request.body;
@@ -738,8 +736,9 @@ function createGoal(request, response){
     var allDay = data.isAllDay;
     var userId = data.userId;
     var isAccomplished = data.isAccomplished;
+    var imgUrl = data.imgUrl;
 
-    var query1 = "INSERT INTO Goals (userId, description, type, start, end, notes, category, allDay, isAccomplished) VALUES (" + userId + ",'" + description + "'," + "'" + type + "'," + "'" + start + "'," + "'" + end + "'," + "'" + notes + "'," + category + "," + allDay + "," + isAccomplished +  ");"
+    var query1 = "INSERT INTO Goals (userId, description, type, start, end, notes, category, allDay, isAccomplished, imgUrl) VALUES (" + userId + ",'" + description + "'," + "'" + type + "'," + "'" + start + "'," + "'" + end + "'," + "'" + notes + "'," + category + "," + allDay + "," + isAccomplished + ",'" + imgUrl+ "');"
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
