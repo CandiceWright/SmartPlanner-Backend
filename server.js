@@ -894,7 +894,7 @@ function createEvent(request, response){
     var userId = data.userId;
     var location = data.location;
 
-    var query1 = "INSERT INTO ScheduledEvents (userId, description, type, start, end, notes, category, allDay, location) VALUES (" + userId + ",'" + description + "'," + "'" + type + "'," + "'" + start + "'," + "'" + end + "'," + "'" + notes + "'," + category + "," + allDay + ",'" + location +  "');"
+    var query1 = "INSERT INTO ScheduledEvents (userId, description, type, start, end, notes, category, allDay, location, isAccomplished) VALUES (" + userId + ",'" + description + "'," + "'" + type + "'," + "'" + start + "'," + "'" + end + "'," + "'" + notes + "'," + category + "," + allDay + ",'" + location +  "'," + false + ");"
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
@@ -957,6 +957,38 @@ function updateEvent(request, response){
             response.send("error updating event");
         }
     });
+}
+
+app.patch('/user/calendar/event/status', updateEventStatus);
+function updateEventStatus(request, response){
+    var data = request.body;
+    var eventId = data.eventId;
+    var newStatus = data.eventStatus;
+
+    var query1 = `UPDATE ScheduledEvents SET isAccomplished = ${newStatus} WHERE eventId = ${eventId};`
+    con.query(query1, function (err1, result, fields) {
+
+        if (!err1) {
+            console.log(result);
+            response.setHeader('Access-Control-Allow-Origin', '*');
+                    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                    response.statusCode = 200;
+                    //response.statusMessage = userId;
+                    //response.send("updated Goal successfully");
+                    response.sendStatus(200);
+
+        }
+        else {
+            response.setHeader('Access-Control-Allow-Origin', '*');
+            // // Request methods you wish to allow
+            response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+            response.statusCode = 500;
+            console.log(err1);
+            response.send("error updating event");
+        }
+    });
+
+
 }
 
 app.delete('/calendar/:id', deleteEvent);
