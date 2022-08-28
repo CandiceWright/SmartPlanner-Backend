@@ -109,6 +109,35 @@ function proof(request, response) {
     response.send("Hi I am working. What do you need.");
 }
 
+/******************* Subscription Purchase Route ****************/
+app.post('/subscription', validateSubscription);
+function validateSubscription(request, response){
+    var data = request.body;
+    var receipt = data.receipt;
+    const reqJson = JSON.stringify({
+        'receipt-data': receipt,
+        'password' : '3a49497d85ed417a820a4165ca80a00b',
+        'exclude-old-transactions' : true
+    });
+    //in production this should be https://buy.itunes.apple.com/verifyReceipt
+    axios.post('https://sandbox.itunes.apple.com/verifyReceipt', reqJson)
+    .then((res) => {
+        console.log(`Status: ${res.status}`);
+        console.log('Body: ', res.data);
+        response.setHeader('Access-Control-Allow-Origin', '*');
+        response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+        response.statusCode = 200
+        response.send(res.data);
+    }).catch((err) => {
+        console.error(err);
+        response.setHeader('Access-Control-Allow-Origin', '*');
+            // // Request methods you wish to allow
+            response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+            response.statusCode = 500;
+            response.send(err);
+    });
+}
+
 /****************** Login/Signup and Logout Routes **********************/
 
 app.post('/login', validateLogin);
@@ -459,6 +488,33 @@ function changePassword(request, response){
 }
 
 /****************** Update User Info Routes **********************/
+
+app.patch('/user/receipt', updateReceipt);
+function updateReceipt(request, response){
+    var data = request.body;
+    var userId = data.userId;
+    var receipt = data.receipt;
+  
+    con.connect(function (err) {
+        var query1 = `UPDATE Users SET receipt = '${receipt}' WHERE userId = ${userId};`
+        con.query(query1, function (err2, result, fields) {
+            if (!err2) {
+                response.setHeader('Access-Control-Allow-Origin', '*');
+                response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                console.log(result);
+                response.sendStatus(200)
+            }
+            else {
+                console.log(err2);
+                response.setHeader('Access-Control-Allow-Origin', '*');
+                response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                response.statusCode = 404;
+                response.send("email update unsuccessful");
+            }
+        });
+    });
+
+}
 
 app.patch('/user/email', updateEmail);
 function updateEmail(request, response){
@@ -1542,4 +1598,49 @@ function deleteDefinition(request, response){
       response.send("defintion deletion was unsuccessful");
     }
   })
+}
+
+/************* Website! Contact Us ******************/
+
+app.post('/contactUs', contactUs);
+function contactUs(request, response){
+  data = request.body;
+  var name = data.name;
+  var email = data.email;
+  var message = data.message;
+
+  var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'info@thevshoot.com',
+      pass: '=!EHKa3V9'
+    }
+  });
+
+  var mailOptions = {
+    from: 'info@thevshoot.com',
+    to: 'info@thevshoot.com',
+    subject: 'New message from ' + name + ' with email ' + email,
+    text: email
+  };
+
+  transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+      console.log(error);
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+      response.statusCode = 500;
+      response.send("could not send email");
+    } else {
+        console.log(error);
+        response.setHeader('Access-Control-Allow-Origin', '*');
+        response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+        response.statusCode = 200;
+        response.send("sent");
+    }
+  });
+
+
+  
+
 }
