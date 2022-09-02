@@ -815,7 +815,7 @@ function updateStory(request, response){
 app.patch('/user/stories/thumbnail', updateStory);
 function updateStory(request, response){
     console.log("updating story thumbnail url");
-    print(request.body);
+    console.log(request.body);
     var data = request.body;
     var storyId = data.storyId;
     var thumbnailUrl = data.thumbnailUrl;
