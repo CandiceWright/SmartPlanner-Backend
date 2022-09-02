@@ -39,7 +39,7 @@ httpsServer.listen(7343, () => {
 });
 
 function listen() {
-    console.log("listening on " + server.address().port); //server waiting for connections
+    //console.log("listening on " + server.address().port); //server waiting for connections
 }
 
 //for sending mail
@@ -77,13 +77,13 @@ function handleDisconnect() {
 
     con.connect(function (err) {              // The server is either down
         if (err) {                                     // or restarting (takes a while sometimes).
-            console.log('error when connecting to db:', err);
+            //console.log('error when connecting to db:', err);
             setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
         }                                     // to avoid a hot loop, and to allow our node script to
     });                                     // process asynchronous requests in the meantime.
     // If you're also serving http, display a 503 error.
     con.on('error', function (err) {
-        console.log('db error', err);
+        //console.log('db error', err);
         if (err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
             handleDisconnect();                         // lost due to either server restart, or a
         } else {                                      // connnection idle timeout (the wait_timeout
@@ -132,7 +132,7 @@ function getSignedUrl(request, response){
             Key: folder + '/' + filename, //filename
             //Expires: 100 //time to expire in seconds
         });
-        console.log(presignedGETURL);
+        //console.log(presignedGETURL);
         response.setHeader('Access-Control-Allow-Origin', '*');
         response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
         response.statusCode = 200
@@ -145,7 +145,7 @@ function getSignedUrl(request, response){
             Key: folder + '/' + filename, //filename
             //Expires: 100 //time to expire in seconds
         });
-        console.log(presignedPUTURL);
+        //console.log(presignedPUTURL);
         response.setHeader('Access-Control-Allow-Origin', '*');
         response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
         response.statusCode = 200
@@ -167,8 +167,8 @@ function validateSubscription(request, response){
     //https://sandbox.itunes.apple.com/verifyReceipt
     axios.post('https://sandbox.itunes.apple.com/verifyReceipt', reqJson)
     .then((res) => {
-        console.log(`Status: ${res.status}`);
-        console.log('Body: ', res.data);
+        //console.log(`Status: ${res.status}`);
+        //console.log('Body: ', res.data);
         response.setHeader('Access-Control-Allow-Origin', '*');
         response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
         response.statusCode = 200
@@ -187,7 +187,7 @@ function validateSubscription(request, response){
 
 app.post('/login', validateLogin);
 function validateLogin(request, response) {
-    console.log(request)
+    //console.log(request)
     var data = request.body;
     var email = data.email;
     var password = data.password;
@@ -200,32 +200,32 @@ function validateLogin(request, response) {
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 200
-                console.log(result);
+                //console.log(result);
                 if (result.length == 0) {
-                    console.log("no user exists");
+                    //console.log("no user exists");
                     response.send("no user exists");
                 }
                 else {
                     if (decrypt(password, result[0].password)) {
-                        console.log("Successful login")
-                        console.log(result);
+                        //console.log("Successful login")
+                        //console.log(result);
                         //token = 
                         var userId = result[0].userId;
                         response.send(result[0])
-                        //console.log(userId)
+                        ////console.log(userId)
                         //   getUserToken(userId, function(newtoken){
-                        //     console.log(newtoken)
+                        //     //console.log(newtoken)
                         //     response.send(newtoken);
                         //   });
                     }
                     else {
-                        console.log("wrong password");
+                        //console.log("wrong password");
                         response.send("wrong password");
                     }
                 }
             }
             else {
-                console.log(err2);
+                //console.log(err2);
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 404;
@@ -237,9 +237,9 @@ function validateLogin(request, response) {
 
 app.post('/signup', signUp);
 function signUp(request, response) {
-    //console.log(response.body);
-    console.log(request);
-    console.log(request.body);
+    ////console.log(response.body);
+    //console.log(request);
+    //console.log(request.body);
     var data = request.body;
 
     var password = data.password;
@@ -259,13 +259,13 @@ function signUp(request, response) {
 
         if (!err1) {
 
-            console.log(result);
-            console.log("signup successful");
+            //console.log(result);
+            //console.log("signup successful");
             response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
                     //response.statusMessage = userId;
-                    console.log(fields);
+                    //console.log(fields);
                     response.send(result);
                     //response.sendStatus(200);
 
@@ -275,7 +275,7 @@ function signUp(request, response) {
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 200;
-            console.log(err1);
+            //console.log(err1);
             response.send("planit name taken");
         }
     });
@@ -294,9 +294,9 @@ function validateEmail(request, response){
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 200
-                console.log(result);
+                //console.log(result);
                 if (result.length == 0) {
-                    console.log("no user exists");
+                    //console.log("no user exists");
                     response.send("no user exists");
                 }
                 else {
@@ -304,7 +304,7 @@ function validateEmail(request, response){
                 }
             }
             else {
-                console.log(err2);
+                //console.log(err2);
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 404;
@@ -326,9 +326,9 @@ function validatePlanitName(request, response){
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 200
-                console.log(result);
+                //console.log(result);
                 if (result.length == 0) {
-                    console.log("no planit exists");
+                    //console.log("no planit exists");
                     response.send("no planit exists");
                 }
                 else {
@@ -336,7 +336,7 @@ function validatePlanitName(request, response){
                 }
             }
             else {
-                console.log(err2);
+                //console.log(err2);
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 404;
@@ -349,7 +349,7 @@ function validatePlanitName(request, response){
 
 app.post('/logout', logout);
 function logout(request, response) {
-    console.log("I am in logout function")
+    //console.log("I am in logout function")
     data = request.body;
     var username = data.username;
 
@@ -401,7 +401,7 @@ function forgotPassword(request, response){
 
         transporter.sendMail(mailOptions, function(error, info){
           if (error) {
-            console.log(error);
+            //console.log(error);
             response.setHeader('Access-Control-Allow-Origin', '*');
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 200;
@@ -412,18 +412,18 @@ function forgotPassword(request, response){
             pinCreatedDateStr = pinCreatedDate.toString()
             var query = "UPDATE Users SET pin = '" + encryptCode + "' , pinCreationDate = '" + pinCreatedDateStr + "' " + "WHERE email = '" + email + "'";
             //var query = "UPDATE Users SET pin = '" + code + "'" + " WHERE username = '" + username + "'";
-            console.log(query)
+            //console.log(query)
             con.query(query, function(err2, result2, field2){
               if (!err2){
-                console.log(result2); //for now just log result to see format
-                console.log('Email sent: ' + info.response);
+                //console.log(result2); //for now just log result to see format
+                //console.log('Email sent: ' + info.response);
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 200;
                 response.send("email successfully sent");
               }
               else {
-                console.log(err2);
+                //console.log(err2);
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 404;
@@ -436,8 +436,8 @@ function forgotPassword(request, response){
       }
     }
     else {
-      //console.log("I had an error")
-      console.log(err);
+      ////console.log("I had an error")
+      //console.log(err);
       response.setHeader('Access-Control-Allow-Origin', '*');
       response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
       response.statusCode = 404;
@@ -449,7 +449,7 @@ function forgotPassword(request, response){
 
 app.post('/user/pin/validate', validatePin);
 function validatePin(request,response){
-  console.log("I am in get userId function");
+  //console.log("I am in get userId function");
   var data = request.body
   var email = data.email
   var givenPin = data.pin
@@ -457,8 +457,8 @@ function validatePin(request,response){
   var query = "SELECT * FROM Users WHERE email = " + "'" + email + "'";
   con.query(query, function(err2, result, fields){
     if (!err2){
-      //console.log("I had no error")
-      console.log(result)
+      ////console.log("I had no error")
+      //console.log(result)
       var pin = result[0].pin;
       if (decrypt(givenPin, pin)){
         //check if its expired
@@ -491,8 +491,8 @@ function validatePin(request,response){
       
     }
     else {
-      //console.log("I had an error")
-      console.log(err2);
+      ////console.log("I had an error")
+      //console.log(err2);
       response.setHeader('Access-Control-Allow-Origin', '*');
       response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
       response.statusCode = 404;
@@ -508,22 +508,22 @@ function changePassword(request, response){
   var data = request.body;
   var email = data.email;
   var newPass = data.newPass; 
-  console.log(newPass)
+  //console.log(newPass)
   encryptedPass = encrypt(newPass);
-  //console.log("in change password with user: " + data.username)
+  ////console.log("in change password with user: " + data.username)
 
   var query = "UPDATE Users SET password = '" + encryptedPass + "'" + "WHERE email = '" + email + "'";
 
   con.query(query, function(err, result, field){
     if (!err){
-      console.log(result); //for now just log result to see format
+      //console.log(result); //for now just log result to see format
       response.setHeader('Access-Control-Allow-Origin', '*');
       response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
       response.statusCode = 200;
       response.send("password updated successfully");
     }
     else {
-      console.log(err);
+      //console.log(err);
       response.setHeader('Access-Control-Allow-Origin', '*');
       response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
       response.statusCode = 404;
@@ -546,11 +546,11 @@ function updateReceipt(request, response){
             if (!err2) {
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-                console.log(result);
+                //console.log(result);
                 response.sendStatus(200)
             }
             else {
-                console.log(err2);
+                //console.log(err2);
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 404;
@@ -572,11 +572,11 @@ function updateEmail(request, response){
             if (!err2) {
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-                console.log(result);
+                //console.log(result);
                 response.sendStatus(200)
             }
             else {
-                console.log(err2);
+                //console.log(err2);
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 404;
@@ -599,11 +599,11 @@ function updatePlanitName(request, response){
             if (!err2) {
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-                console.log(result);
+                //console.log(result);
                 response.sendStatus(200)
             }
             else {
-                console.log(err2);
+                //console.log(err2);
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 404;
@@ -625,11 +625,11 @@ function updateInwardVideo(request, response){
             if (!err2) {
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-                console.log(result);
+                //console.log(result);
                 response.sendStatus(200)
             }
             else {
-                console.log(err2);
+                //console.log(err2);
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 404;
@@ -649,14 +649,14 @@ function updateTheme(request, response){
     var query = `UPDATE Users SET theme = ${theme} WHERE email = '${email}';`
     con.query(query, function(err, result, field){
         if (!err){
-          console.log(result);
+          //console.log(result);
           response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
           response.send("");
         }
         else {
-          console.log(err);
+          //console.log(err);
           esponse.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 404;
@@ -675,14 +675,14 @@ function updateProfileImage(request, response){
     var query = `UPDATE Users SET profileImage = '${image}' WHERE userId = ${id};`
     con.query(query, function(err, result, field){
         if (!err){
-          console.log(result);
+          //console.log(result);
           response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
           response.send("");
         }
         else {
-          console.log(err);
+          //console.log(err);
           response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 404;
@@ -700,14 +700,14 @@ function updateSpaceTheme(request, response){
     var query = `UPDATE Users SET spaceTheme = '${image}' WHERE email = '${email}';`
     con.query(query, function(err, result, field){
         if (!err){
-          console.log(result);
+          //console.log(result);
           response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
           response.send("");
         }
         else {
-          console.log(err);
+          //console.log(err);
           response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 404;
@@ -728,11 +728,11 @@ function getAllStories(request, response){
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 200
-                console.log(result);
+                //console.log(result);
                 response.send(result);
             }
             else {
-                console.log(err2);
+                //console.log(err2);
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 404;
@@ -744,6 +744,7 @@ function getAllStories(request, response){
 
 app.post('/user/stories', createStory);
 function createStory(request, response){
+    print("creating new story")
     var data = request.body;
     var userId = data.userId;
     var date = data.date;
@@ -756,7 +757,7 @@ function createStory(request, response){
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
-            console.log(result);
+            //console.log(result);
             response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
@@ -770,7 +771,7 @@ function createStory(request, response){
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            console.log(err1);
+            //console.log(err1);
             response.send("error creating story");
         }
     });
@@ -779,6 +780,7 @@ function createStory(request, response){
 //store where the video is saved locally
 app.patch('/user/stories', updateStory);
 function updateStory(request, response){
+    print("saving where the story video is store locally");
     var data = request.body;
     var storyId = data.storyId;
     var localVideoPath = data.localPath;
@@ -789,7 +791,7 @@ function updateStory(request, response){
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
-            console.log(result);
+            //console.log(result);
             response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
@@ -803,7 +805,7 @@ function updateStory(request, response){
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            console.log(err1);
+            //console.log(err1);
             response.send("error updating story");
         }
     });
@@ -812,6 +814,7 @@ function updateStory(request, response){
 //update thumbnail firebase url
 app.patch('/user/stories/thumbnail', updateStory);
 function updateStory(request, response){
+    print("updating story thumbnail url");
     var data = request.body;
     var storyId = data.storyId;
     var thumbnailUrl = data.thumbnailUrl;
@@ -822,7 +825,7 @@ function updateStory(request, response){
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
-            console.log(result);
+            //console.log(result);
             response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
@@ -836,7 +839,7 @@ function updateStory(request, response){
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            console.log(err1);
+            //console.log(err1);
             response.send("error updating story");
         }
     });
@@ -850,14 +853,14 @@ function deleteStory(request, response){
   
   con.query(query, function(err, result, field){
     if (!err){
-        console.log(result);
+        //console.log(result);
         response.setHeader('Access-Control-Allow-Origin', '*');
         response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
         response.statusCode = 200;         
         response.send("story successfully deleted");
     }
     else {
-      console.log(err);
+      //console.log(err);
       response.setHeader('Access-Control-Allow-Origin', '*');
       // // Request methods you wish to allow
       response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -879,11 +882,11 @@ function getAllGoals(request, response){
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 200
-                console.log(result);
+                //console.log(result);
                 response.send(result);
             }
             else {
-                console.log(err2);
+                //console.log(err2);
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 404;
@@ -912,7 +915,7 @@ function createGoal(request, response){
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
-            console.log(result);
+            //console.log(result);
             response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
@@ -926,7 +929,7 @@ function createGoal(request, response){
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            console.log(err1);
+            //console.log(err1);
             response.send("error creating goal");
         }
     });
@@ -950,7 +953,7 @@ function updateGoal(request, response){
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
-            console.log(result);
+            //console.log(result);
             response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
@@ -964,7 +967,7 @@ function updateGoal(request, response){
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            console.log(err1);
+            //console.log(err1);
             response.send("error updating goal");
         }
     });
@@ -982,11 +985,11 @@ function updateGoalImage(request, response){
             if (!err2) {
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-                console.log(result);
+                //console.log(result);
                 response.sendStatus(200)
             }
             else {
-                console.log(err2);
+                //console.log(err2);
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 404;
@@ -1004,14 +1007,14 @@ function deleteGoal(request, response){
   
   con.query(query, function(err, result, field){
     if (!err){
-        console.log(result);
+        //console.log(result);
         response.setHeader('Access-Control-Allow-Origin', '*');
         response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
         response.statusCode = 200;         
         response.send("goal successfully deleted");
     }
     else {
-      console.log(err);
+      //console.log(err);
       response.setHeader('Access-Control-Allow-Origin', '*');
       // // Request methods you wish to allow
       response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -1031,7 +1034,7 @@ function updateGoalStatus(request, response){
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
-            console.log(result);
+            //console.log(result);
             response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
@@ -1045,7 +1048,7 @@ function updateGoalStatus(request, response){
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            console.log(err1);
+            //console.log(err1);
             response.send("error updating goal");
         }
     });
@@ -1063,11 +1066,11 @@ function getAllScheduledEvents(request, response){
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 200
-                console.log(result);
+                //console.log(result);
                 response.send(result);
             }
             else {
-                console.log(err2);
+                //console.log(err2);
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 404;
@@ -1094,7 +1097,7 @@ function createEvent(request, response){
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
-            console.log(result);
+            //console.log(result);
             response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
@@ -1108,7 +1111,7 @@ function createEvent(request, response){
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            console.log(err1);
+            //console.log(err1);
             response.send("error creating event");
         }
     });
@@ -1116,10 +1119,10 @@ function createEvent(request, response){
 
 app.patch('/calendar', updateEvent);
 function updateEvent(request, response){
-    console.log("in update events");
+    //console.log("in update events");
     var data = request.body;
     var eventId = data.eventId;
-    console.log(eventId);
+    //console.log(eventId);
     var description = data.description;
     var type = data.type;
     var start = data.start;
@@ -1135,7 +1138,7 @@ function updateEvent(request, response){
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
-            console.log(result);
+            //console.log(result);
             response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
@@ -1149,7 +1152,7 @@ function updateEvent(request, response){
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            console.log(err1);
+            //console.log(err1);
             response.send("error updating event");
         }
     });
@@ -1165,7 +1168,7 @@ function updateEventStatus(request, response){
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
-            console.log(result);
+            //console.log(result);
             response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
@@ -1179,7 +1182,7 @@ function updateEventStatus(request, response){
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            console.log(err1);
+            //console.log(err1);
             response.send("error updating event");
         }
     });
@@ -1195,14 +1198,14 @@ function deleteEvent(request, response){
   
   con.query(query, function(err, result, field){
     if (!err){
-        console.log(result);
+        //console.log(result);
         response.setHeader('Access-Control-Allow-Origin', '*');
         response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
         response.statusCode = 200;         
         response.send("event successfully deleted");
     }
     else {
-      console.log(err);
+      //console.log(err);
       response.setHeader('Access-Control-Allow-Origin', '*');
       // // Request methods you wish to allow
       response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -1224,11 +1227,11 @@ function getAllCategories(request, response){
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 200
-                console.log(result);
+                //console.log(result);
                 response.send(result);
             }
             else {
-                console.log(err2);
+                //console.log(err2);
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 404;
@@ -1249,7 +1252,7 @@ function createCategory(request, response){
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
-            console.log(result);
+            //console.log(result);
             response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
@@ -1263,7 +1266,7 @@ function createCategory(request, response){
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            console.log(err1);
+            //console.log(err1);
             response.send("error creating category");
         }
     });
@@ -1281,7 +1284,7 @@ function editCategory(request, response){
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
-            console.log(result);
+            //console.log(result);
             response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
@@ -1295,7 +1298,7 @@ function editCategory(request, response){
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            console.log(err1);
+            //console.log(err1);
             response.send("error updating category");
         }
     });
@@ -1316,11 +1319,11 @@ function getAllBacklogTasks(request, response){
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 200
-                console.log(result);
+                //console.log(result);
                 response.send(result);
             }
             else {
-                console.log(err2);
+                //console.log(err2);
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 404;
@@ -1345,7 +1348,7 @@ function createBacklogTask(request, response){
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
-            console.log(result);
+            //console.log(result);
             response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
@@ -1359,7 +1362,7 @@ function createBacklogTask(request, response){
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            console.log(err1);
+            //console.log(err1);
             response.send("error creating event");
         }
     });
@@ -1383,7 +1386,7 @@ function updateBacklogTask(request, response){
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
-            console.log(result);
+            //console.log(result);
             response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
@@ -1397,7 +1400,7 @@ function updateBacklogTask(request, response){
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            console.log(err1);
+            //console.log(err1);
             response.send("error updating event");
         }
     });
@@ -1411,14 +1414,14 @@ function deleteBacklogTask(request, response){
   
   con.query(query, function(err, result, field){
     if (!err){
-        console.log(result);
+        //console.log(result);
         response.setHeader('Access-Control-Allow-Origin', '*');
         response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
         response.statusCode = 200;         
         response.send("task successfully deleted");
     }
     else {
-      console.log(err);
+      //console.log(err);
       response.setHeader('Access-Control-Allow-Origin', '*');
       // // Request methods you wish to allow
       response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -1440,7 +1443,7 @@ function scheduleTask(request, response){
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
-            console.log(result);
+            //console.log(result);
             response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
@@ -1454,7 +1457,7 @@ function scheduleTask(request, response){
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            console.log(err1);
+            //console.log(err1);
             response.send("error scheduling task");
         }
     });
@@ -1476,7 +1479,7 @@ var query1 = `UPDATE Backlog SET scheduledDate = null, calendarItem = null WHERE
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
-            console.log(result);
+            //console.log(result);
             response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
@@ -1490,13 +1493,13 @@ var query1 = `UPDATE Backlog SET scheduledDate = null, calendarItem = null WHERE
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            console.log(err1);
+            //console.log(err1);
             response.send("error unscheduling task");
         }
     });
       }
       else {
-        console.log(err);
+        //console.log(err);
         response.setHeader('Access-Control-Allow-Origin', '*');
         // // Request methods you wish to allow
         response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -1519,11 +1522,11 @@ function getAllHabits(request, response){
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 200
-                console.log(result);
+                //console.log(result);
                 response.send(result);
             }
             else {
-                console.log(err2);
+                //console.log(err2);
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 404;
@@ -1544,7 +1547,7 @@ function createHabit(request, response){
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
-            console.log(result);
+            //console.log(result);
             response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
@@ -1558,7 +1561,7 @@ function createHabit(request, response){
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            console.log(err1);
+            //console.log(err1);
             response.send("error creating habit");
         }
     });
@@ -1581,7 +1584,7 @@ function updateHabit(request, response){
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
-            console.log(result);
+            //console.log(result);
             response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
@@ -1595,7 +1598,7 @@ function updateHabit(request, response){
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            console.log(err1);
+            //console.log(err1);
             response.send("error updating habit");
         }
     });
@@ -1609,14 +1612,14 @@ function deleteHabit(request, response){
   
   con.query(query, function(err, result, field){
     if (!err){
-        console.log(result);
+        //console.log(result);
         response.setHeader('Access-Control-Allow-Origin', '*');
         response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
         response.statusCode = 200;         
         response.send("habit successfully deleted");
     }
     else {
-      console.log(err);
+      //console.log(err);
       response.setHeader('Access-Control-Allow-Origin', '*');
       // // Request methods you wish to allow
       response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -1638,11 +1641,11 @@ function getDictionary(request, response){
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 200
-                console.log(result);
+                //console.log(result);
                 response.send(result);
             }
             else {
-                console.log(err2);
+                //console.log(err2);
                 response.setHeader('Access-Control-Allow-Origin', '*');
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 404;
@@ -1664,7 +1667,7 @@ function createDefinition(request, response){
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
-            console.log(result);
+            //console.log(result);
             response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
@@ -1678,7 +1681,7 @@ function createDefinition(request, response){
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            console.log(err1);
+            //console.log(err1);
             response.send("error creating defintion");
         }
     });
@@ -1695,7 +1698,7 @@ function updateDefintion(request, response){
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
-            console.log(result);
+            //console.log(result);
             response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 200;
@@ -1709,7 +1712,7 @@ function updateDefintion(request, response){
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            console.log(err1);
+            //console.log(err1);
             response.send("error updating definition");
         }
     });
@@ -1723,14 +1726,14 @@ function deleteDefinition(request, response){
   
   con.query(query, function(err, result, field){
     if (!err){
-        console.log(result);
+        //console.log(result);
         response.setHeader('Access-Control-Allow-Origin', '*');
         response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
         response.statusCode = 200;         
         response.send("defintion successfully deleted");
     }
     else {
-      console.log(err);
+      //console.log(err);
       response.setHeader('Access-Control-Allow-Origin', '*');
       // // Request methods you wish to allow
       response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -1766,13 +1769,13 @@ function contactUs(request, response){
 
   transporter.sendMail(mailOptions, function(error, info){
     if (error) {
-      console.log(error);
+      //console.log(error);
       response.setHeader('Access-Control-Allow-Origin', '*');
       response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
       response.statusCode = 500;
       response.send("could not send email");
     } else {
-        console.log(error);
+        //console.log(error);
         response.setHeader('Access-Control-Allow-Origin', '*');
         response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
         response.statusCode = 200;
