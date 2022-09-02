@@ -744,7 +744,7 @@ function getAllStories(request, response){
 
 app.post('/user/stories', createStory);
 function createStory(request, response){
-    print("creating new story")
+    console.log("creating new story")
     var data = request.body;
     var userId = data.userId;
     var date = data.date;
@@ -780,7 +780,7 @@ function createStory(request, response){
 //store where the video is saved locally
 app.patch('/user/stories', updateStory);
 function updateStory(request, response){
-    print("saving where the story video is store locally");
+    console.log("saving where the story video is store locally");
     var data = request.body;
     var storyId = data.storyId;
     var localVideoPath = data.localPath;
@@ -814,7 +814,7 @@ function updateStory(request, response){
 //update thumbnail firebase url
 app.patch('/user/stories/thumbnail', updateStory);
 function updateStory(request, response){
-    print("updating story thumbnail url");
+    console.log("updating story thumbnail url");
     var data = request.body;
     var storyId = data.storyId;
     var thumbnailUrl = data.thumbnailUrl;
