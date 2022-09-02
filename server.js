@@ -110,6 +110,49 @@ function proof(request, response) {
     response.send("Hi I am working. What do you need.");
 }
 
+/******************** AWS S3 ***********************/
+var AWS = require('aws-sdk');
+var awsCredentials = {
+    accessKeyId: 'AKIAV7XIIOOMBIB7UKGQ',
+    secretAccessKey : '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'
+};
+AWS.config.update({credentials: awsCredentials, region: 'us-east-1'});
+var s3 = new AWS.S3();
+
+app.get('/signedUrl/:action/:folder/:filename', getSignedUrl);
+function getSignedUrl(request, response){
+    var action = request.params.action;
+    var folder = request.params.folder;
+    var filename = request.params.filename;
+
+    if(action == "get"){
+        var presignedGETURL = s3.getSignedUrl('getObject', {
+            Bucket: 'anotherplanit-us-east',
+            //Bucket: 'anotherplanit-eu-north-1',
+            Key: folder + '/' + filename, //filename
+            //Expires: 100 //time to expire in seconds
+        });
+        console.log(presignedGETURL);
+        response.setHeader('Access-Control-Allow-Origin', '*');
+        response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+        response.statusCode = 200
+        response.send(presignedGETURL);
+    }
+    else {
+        var presignedPUTURL = s3.getSignedUrl('putObject', {
+            Bucket: 'anotherplanit-us-east',
+            //Bucket: 'anotherplanit-eu-north-1',
+            Key: folder + '/' + filename, //filename
+            //Expires: 100 //time to expire in seconds
+        });
+        console.log(presignedPUTURL);
+        response.setHeader('Access-Control-Allow-Origin', '*');
+        response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+        response.statusCode = 200
+        response.send(presignedPUTURL);
+    }
+}
+
 /******************* Subscription Purchase Route ****************/
 app.post('/subscription', validateSubscription);
 function validateSubscription(request, response){
@@ -121,7 +164,8 @@ function validateSubscription(request, response){
         'exclude-old-transactions' : true
     });
     //in production this should be https://buy.itunes.apple.com/verifyReceipt
-    axios.post('https://sandbox.itunes.apple.com/verifyReceipt', reqJson)
+    //https://sandbox.itunes.apple.com/verifyReceipt
+    axios.post('https://buy.itunes.apple.com/verifyReceipt', reqJson)
     .then((res) => {
         console.log(`Status: ${res.status}`);
         console.log('Body: ', res.data);
@@ -514,7 +558,6 @@ function updateReceipt(request, response){
             }
         });
     });
-
 }
 
 app.patch('/user/email', updateEmail);
@@ -573,10 +616,11 @@ app.patch('/user/inwardvideo', updateInwardVideo);
 function updateInwardVideo(request, response){
     var data = request.body;
     var userId = data.userId;
-    var inwardVideo = data.inwardVideo;
+    var inwardVideoUrl = data.inwardVideoUrl;
+    var coverVideoLocalPath = data.coverVideoLocalPath;
   
     con.connect(function (err) {
-        var query1 = `UPDATE Users SET inwardVideoUrl = '${inwardVideo}' WHERE userId = ${userId};`
+        var query1 = `UPDATE Users SET inwardVideoUrl = '${inwardVideoUrl}', coverVideoLocalPath = '${coverVideoLocalPath}' WHERE userId = ${userId};`
         con.query(query1, function (err2, result, fields) {
             if (!err2) {
                 response.setHeader('Access-Control-Allow-Origin', '*');
@@ -704,9 +748,11 @@ function createStory(request, response){
     var userId = data.userId;
     var date = data.date;
     var video = data.url;
+    var localPath = data.localPath;
     var thumbnail = data.thumbnail;
+    var localThumbnail = data.localthumbnailPath;
 
-    var query1 = "INSERT INTO Stories (userId, date, videoUrl, thumbnail) VALUES (" + userId + ",'" + date + "'," + "'" + video + "'," + "'" + thumbnail + "');"
+    var query1 = "INSERT INTO Stories (userId, date, videoUrl, videoLocalPath, thumbnail, localthumbnailPath) VALUES (" + userId + ",'" + date + "'," + "'" + video + "'," + "'" + localPath + "'," + "'" + thumbnail + "'," + "'" + localThumbnail + "');"
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
@@ -726,6 +772,72 @@ function createStory(request, response){
             response.statusCode = 500;
             console.log(err1);
             response.send("error creating story");
+        }
+    });
+}
+
+//store where the video is saved locally
+app.patch('/user/stories', updateStory);
+function updateStory(request, response){
+    var data = request.body;
+    var storyId = data.storyId;
+    var localVideoPath = data.localPath;
+    
+    //var userId = data.userId;
+
+    var query1 = `UPDATE Stories SET videoLocalPath = '${localVideoPath}' WHERE storyId = ${storyId};`
+    con.query(query1, function (err1, result, fields) {
+
+        if (!err1) {
+            console.log(result);
+            response.setHeader('Access-Control-Allow-Origin', '*');
+                    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                    response.statusCode = 200;
+                    //response.statusMessage = userId;
+                    //response.send("updated Goal successfully");
+                    response.sendStatus(200);
+
+        }
+        else {
+            response.setHeader('Access-Control-Allow-Origin', '*');
+            // // Request methods you wish to allow
+            response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+            response.statusCode = 500;
+            console.log(err1);
+            response.send("error updating story");
+        }
+    });
+}
+
+//update thumbnail firebase url
+app.patch('/user/stories/thumbnail', updateStory);
+function updateStory(request, response){
+    var data = request.body;
+    var storyId = data.storyId;
+    var thumbnailUrl = data.thumbnailUrl;
+    
+    //var userId = data.userId;
+
+    var query1 = `UPDATE Stories SET thumbnail = '${thumbnailUrl}' WHERE storyId = ${storyId};`
+    con.query(query1, function (err1, result, fields) {
+
+        if (!err1) {
+            console.log(result);
+            response.setHeader('Access-Control-Allow-Origin', '*');
+                    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                    response.statusCode = 200;
+                    //response.statusMessage = userId;
+                    //response.send("updated Goal successfully");
+                    response.sendStatus(200);
+
+        }
+        else {
+            response.setHeader('Access-Control-Allow-Origin', '*');
+            // // Request methods you wish to allow
+            response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+            response.statusCode = 500;
+            console.log(err1);
+            response.send("error updating story");
         }
     });
 }
@@ -794,8 +906,9 @@ function createGoal(request, response){
     var userId = data.userId;
     var isAccomplished = data.isAccomplished;
     var imgUrl = data.imgUrl;
+    var localImgPath = data.localImgPath;
 
-    var query1 = "INSERT INTO Goals (userId, description, type, start, end, notes, category, allDay, isAccomplished, imgUrl) VALUES (" + userId + ",'" + description + "'," + "'" + type + "'," + "'" + start + "'," + "'" + end + "'," + "'" + notes + "'," + category + "," + allDay + "," + isAccomplished + ",'" + imgUrl+ "');"
+    var query1 = "INSERT INTO Goals (userId, description, type, start, end, notes, category, allDay, isAccomplished, imgUrl, localImgPath) VALUES (" + userId + ",'" + description + "'," + "'" + type + "'," + "'" + start + "'," + "'" + end + "'," + "'" + notes + "'," + category + "," + allDay + "," + isAccomplished + ",'" + imgUrl+ "'," + "'" + localImgPath + "');"
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
@@ -854,6 +967,32 @@ function updateGoal(request, response){
             console.log(err1);
             response.send("error updating goal");
         }
+    });
+}
+
+app.patch('/goals/:id/image', updateGoalImage);
+function updateGoalImage(request, response){
+    var data = request.body;
+    var goalId = request.params.id;
+    var image = data.imgUrl;
+  
+    con.connect(function (err) {
+        var query1 = `UPDATE Goals SET imgUrl = '${image}' WHERE goalId = ${goalId};`
+        con.query(query1, function (err2, result, fields) {
+            if (!err2) {
+                response.setHeader('Access-Control-Allow-Origin', '*');
+                response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                console.log(result);
+                response.sendStatus(200)
+            }
+            else {
+                console.log(err2);
+                response.setHeader('Access-Control-Allow-Origin', '*');
+                response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                response.statusCode = 404;
+                response.send("email update unsuccessful");
+            }
+        });
     });
 }
 
