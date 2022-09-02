@@ -780,14 +780,14 @@ function createStory(request, response){
 //store where the video is saved locally
 app.patch('/user/stories', updateStory);
 function updateStory(request, response){
-    console.log("saving where the story video is store locally");
+    
     var data = request.body;
     var storyId = data.storyId;
-    var localVideoPath = data.localPath;
-    
-    //var userId = data.userId;
-
-    var query1 = `UPDATE Stories SET videoLocalPath = '${localVideoPath}' WHERE storyId = ${storyId};`
+    var field = data.field;
+    if(field == "videoLocalPath"){
+        console.log("saving where the story video is store locally");
+        var videoLocalPath = data.videoLocalPath;
+        var query1 = `UPDATE Stories SET videoLocalPath = '${videoLocalPath}' WHERE storyId = ${storyId};`
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
@@ -809,42 +809,82 @@ function updateStory(request, response){
             response.send("error updating story");
         }
     });
+
+    }
+    else if(field == "thumbnailUrl") {
+        console.log("updating story thumbnail url");
+        console.log(request.body);
+        var data = request.body;
+        var storyId = data.storyId;
+        var thumbnailUrl = data.thumbnailUrl;
+        
+        //var userId = data.userId;
+    
+        var query1 = `UPDATE Stories SET thumbnail = '${thumbnailUrl}' WHERE storyId = ${storyId};`
+        con.query(query1, function (err1, result, fields) {
+    
+            if (!err1) {
+                //console.log(result);
+                response.setHeader('Access-Control-Allow-Origin', '*');
+                        response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                        response.statusCode = 200;
+                        //response.statusMessage = userId;
+                        //response.send("updated Goal successfully");
+                        response.sendStatus(200);
+    
+            }
+            else {
+                response.setHeader('Access-Control-Allow-Origin', '*');
+                // // Request methods you wish to allow
+                response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                response.statusCode = 500;
+                //console.log(err1);
+                response.send("error updating story");
+            }
+        });
+    }
+    else {
+        console.log(field + " field does nott exist");
+    }
+   
+
+    
 }
 
 //update thumbnail firebase url
-app.patch('/user/stories/thumbnail', updateStory);
-function updateStory(request, response){
-    console.log("updating story thumbnail url");
-    console.log(request.body);
-    var data = request.body;
-    var storyId = data.storyId;
-    var thumbnailUrl = data.thumbnailUrl;
+// app.patch('/user/stories/thumbnail', updateStory);
+// function updateStory(request, response){
+//     console.log("updating story thumbnail url");
+//     console.log(request.body);
+//     var data = request.body;
+//     var storyId = data.storyId;
+//     var thumbnailUrl = data.thumbnailUrl;
     
-    //var userId = data.userId;
+//     //var userId = data.userId;
 
-    var query1 = `UPDATE Stories SET thumbnail = '${thumbnailUrl}' WHERE storyId = ${storyId};`
-    con.query(query1, function (err1, result, fields) {
+//     var query1 = `UPDATE Stories SET thumbnail = '${thumbnailUrl}' WHERE storyId = ${storyId};`
+//     con.query(query1, function (err1, result, fields) {
 
-        if (!err1) {
-            //console.log(result);
-            response.setHeader('Access-Control-Allow-Origin', '*');
-                    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-                    response.statusCode = 200;
-                    //response.statusMessage = userId;
-                    //response.send("updated Goal successfully");
-                    response.sendStatus(200);
+//         if (!err1) {
+//             //console.log(result);
+//             response.setHeader('Access-Control-Allow-Origin', '*');
+//                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+//                     response.statusCode = 200;
+//                     //response.statusMessage = userId;
+//                     //response.send("updated Goal successfully");
+//                     response.sendStatus(200);
 
-        }
-        else {
-            response.setHeader('Access-Control-Allow-Origin', '*');
-            // // Request methods you wish to allow
-            response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-            response.statusCode = 500;
-            //console.log(err1);
-            response.send("error updating story");
-        }
-    });
-}
+//         }
+//         else {
+//             response.setHeader('Access-Control-Allow-Origin', '*');
+//             // // Request methods you wish to allow
+//             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+//             response.statusCode = 500;
+//             //console.log(err1);
+//             response.send("error updating story");
+//         }
+//     });
+// }
 
 app.delete('/user/stories/:id', deleteStory);
 function deleteStory(request, response){
