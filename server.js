@@ -786,7 +786,7 @@ function updateStory(request, response){
     var field = data.field;
     if(field == "videoLocalPath"){
         console.log("saving where the story video is store locally");
-        var videoLocalPath = data.videoLocalPath;
+        var videoLocalPath = data.localPath;
         var query1 = `UPDATE Stories SET videoLocalPath = '${videoLocalPath}' WHERE storyId = ${storyId};`
     con.query(query1, function (err1, result, fields) {
 
