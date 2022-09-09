@@ -360,6 +360,140 @@ function logout(request, response) {
 
 }
 
+app.delete('/user/:id', deleteAccount);
+function deleteAccount(request, response){
+  var userId = request.params.id;
+
+  
+  //delete ScheduledEvents
+  var query = `DELETE FROM ScheduledEvents WHERE userId = ${userId};`
+  
+  con.query(query, function(err, result, field){
+    if (!err){
+        //delete Backlog
+        var query = `DELETE FROM Backlog WHERE userId = ${userId};`
+  
+  con.query(query, function(err, result, field){
+    if (!err){
+        //delete Goals
+        var query = `DELETE FROM Goals WHERE userId = ${userId};`
+  
+        con.query(query, function(err, result, field){
+            if (!err){
+                
+                //delete LifeCategories
+                var query = `DELETE FROM LifeCategories WHERE userId = ${userId};`
+        
+                con.query(query, function(err, result, field){
+                    if (!err){
+                        //delete Habits
+                        var query = `DELETE FROM Habits WHERE userId = ${userId};`
+                
+                        con.query(query, function(err, result, field){
+                            if (!err){
+                                //delete Dictionary
+                                var query = `DELETE FROM Dictionary WHERE userId = ${userId};`
+                                con.query(query, function(err, result, field){
+                                    if (!err){
+                                        //delete Stories
+                                        var query = `DELETE FROM Stories WHERE userId = ${userId};`
+        
+                                        con.query(query, function(err, result, field){
+                                            if (!err){
+                                                var query = `DELETE FROM Users WHERE userId = ${userId};`
+  
+                                                con.query(query, function(err, result, field){
+                                                    if (!err){
+                                                        //console.log(result);
+                                                        response.setHeader('Access-Control-Allow-Origin', '*');
+                                                        response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                                                        response.statusCode = 200;         
+                                                        response.send("user deleted");
+                                                    }
+                                                    else {
+                                                    console.log(err);
+                                                    response.setHeader('Access-Control-Allow-Origin', '*');
+                                                    // // Request methods you wish to allow
+                                                    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                                                    response.statusCode = 500;
+                                                    response.send("error deleting user");
+                                                    }
+                                                })
+                                            }
+                                            else {
+                                            console.log(err);
+                                            response.setHeader('Access-Control-Allow-Origin', '*');
+                                            // // Request methods you wish to allow
+                                            response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                                            response.statusCode = 500;
+                                            response.send("error deleting account");
+                                            }
+                                        })
+                                    }
+                                    else {
+                                    console.log(err);
+                                    response.setHeader('Access-Control-Allow-Origin', '*');
+                                    // // Request methods you wish to allow
+                                    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                                    response.statusCode = 500;
+                                    response.send("error deleting account");
+                                    }
+                                })
+                            }
+                            else {
+                            console.log(err);
+                            response.setHeader('Access-Control-Allow-Origin', '*');
+                            // // Request methods you wish to allow
+                            response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                            response.statusCode = 500;
+                            response.send("error deleting account");
+                            }
+                        })
+                        
+
+                    }
+                    else {
+                    console.log(err);
+                    response.setHeader('Access-Control-Allow-Origin', '*');
+                    // // Request methods you wish to allow
+                    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                    response.statusCode = 500;
+                    response.send("error deleting account");
+                    }
+                })
+
+            }
+            else {
+            console.log(err);
+            response.setHeader('Access-Control-Allow-Origin', '*');
+            // // Request methods you wish to allow
+            response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+            response.statusCode = 500;
+            response.send("error deleting account");
+            }
+        })
+    }
+    else {
+      console.log(err);
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      // // Request methods you wish to allow
+      response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+      response.statusCode = 500;
+      response.send("error deleting account");
+    }
+  })
+    }
+    else {
+      console.log(err);
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      // // Request methods you wish to allow
+      response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+      response.statusCode = 500;
+      response.send("error deleting account");
+    }
+  })
+}
+
 /************* Forgot Username/Password ******************/
 
 app.post('/forgotPass', forgotPassword);
