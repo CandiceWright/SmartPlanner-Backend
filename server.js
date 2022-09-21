@@ -535,7 +535,7 @@ function forgotPassword(request, response){
 
         transporter.sendMail(mailOptions, function(error, info){
           if (error) {
-            //console.log(error);
+            console.log(error);
             response.setHeader('Access-Control-Allow-Origin', '*');
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 200;
