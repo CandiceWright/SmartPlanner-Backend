@@ -235,6 +235,45 @@ function validateLogin(request, response) {
     });
 }
 
+app.get('/user/:id', getUser);
+function getUser(request, response) {
+    //console.log(request)
+    var user = request.params.id;
+    
+
+    con.connect(function (err) {
+        var query1 = "SELECT * FROM Users WHERE userId = " + user;
+        con.query(query1, function (err2, result, fields) {
+
+            if (!err2) {
+                
+                //console.log(result);
+                if (result.length == 0) {
+                    //console.log("no user exists");
+                    response.setHeader('Access-Control-Allow-Origin', '*');
+                    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                    response.statusCode = 500;
+                    response.send("no user exists");
+                }
+                else {
+                    response.setHeader('Access-Control-Allow-Origin', '*');
+                    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                    response.statusCode = 200;
+                    response.send(result[0]);
+
+                }
+            }
+            else {
+                //console.log(err2);
+                response.setHeader('Access-Control-Allow-Origin', '*');
+                response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                response.statusCode = 500;
+                response.send("failed");
+            }
+        });
+    });
+}
+
 app.post('/signup', signUp);
 function signUp(request, response) {
     ////console.log(response.body);
@@ -535,7 +574,7 @@ function forgotPassword(request, response){
 
         transporter.sendMail(mailOptions, function(error, info){
           if (error) {
-            console.log(error);
+            //console.log(error);
             response.setHeader('Access-Control-Allow-Origin', '*');
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 200;
@@ -842,6 +881,31 @@ function updateSpaceTheme(request, response){
         }
         else {
           //console.log(err);
+          response.setHeader('Access-Control-Allow-Origin', '*');
+                    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                    response.statusCode = 404;
+          response.send("unsuccessful");
+        }
+      })
+}
+
+app.patch('/quote', updateQuote);
+function updateQuote(request, response){
+    var data = request.body;
+    var userId = data.userId;
+    var quote = data.quote;
+
+    var query = `UPDATE Users SET quote = '${quote}' WHERE userId = '${userId}';`
+    con.query(query, function(err, result, field){
+        if (!err){
+          //console.log(result);
+          response.setHeader('Access-Control-Allow-Origin', '*');
+                    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                    response.statusCode = 200;
+          response.send("");
+        }
+        else {
+          console.log(err);
           response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                     response.statusCode = 404;
@@ -1267,8 +1331,12 @@ function createEvent(request, response){
     var allDay = data.isAllDay;
     var userId = data.userId;
     var location = data.location;
+    var backlogItemRef = data.backlogItemRef;
+    if(backlogItemRef == undefined){
+        backlogItemRef = null;
+    }
 
-    var query1 = "INSERT INTO ScheduledEvents (userId, description, type, start, end, notes, category, allDay, location, isAccomplished) VALUES (" + userId + ",'" + description + "'," + "'" + type + "'," + "'" + start + "'," + "'" + end + "'," + "'" + notes + "'," + category + "," + allDay + ",'" + location +  "'," + false + ");"
+    var query1 = "INSERT INTO ScheduledEvents (userId, description, type, start, end, notes, category, allDay, location, backlogItemRef,isAccomplished) VALUES (" + userId + ",'" + description + "'," + "'" + type + "'," + "'" + start + "'," + "'" + end + "'," + "'" + notes + "'," + category + "," + allDay + ",'" + location +  "'," + backlogItemRef + "," + false + ");"
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
@@ -1286,7 +1354,7 @@ function createEvent(request, response){
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            //console.log(err1);
+            console.log(err1);
             response.send("error creating event");
         }
     });
@@ -1327,7 +1395,7 @@ function updateEvent(request, response){
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            //console.log(err1);
+            console.log(err1);
             response.send("error updating event");
         }
     });
@@ -1518,8 +1586,9 @@ function createBacklogTask(request, response){
     var userId = data.userId;
     var location = data.location;
     var isComplete = data.isComplete;
+    var status = data.status;
 
-    var query1 = "INSERT INTO Backlog (userId, description, completeBy, notes, category, isComplete, location) VALUES (" + userId + ",'" + description + "'," + "'" + completeBy + "'," + "'" + notes + "'," + category + "," + isComplete + "," + "'" + location + "');"
+    var query1 = "INSERT INTO Backlog (userId, status, description, completeBy, notes, category, isComplete, location) VALUES (" + userId + ",'" + status + "','" + description + "'," + "'" + completeBy + "'," + "'" + notes + "'," + category + "," + isComplete + "," + "'" + location + "');"
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
@@ -1537,7 +1606,7 @@ function createBacklogTask(request, response){
             // // Request methods you wish to allow
             response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             response.statusCode = 500;
-            //console.log(err1);
+            console.log(err1);
             response.send("error creating event");
         }
     });
@@ -1554,10 +1623,13 @@ function updateBacklogTask(request, response){
     var location = data.location;
     var isComplete = data.isComplete;
     var taskId = data.taskId;
+    var status = data.status;
+
+    
 
     //var userId = data.userId;
 
-    var query1 = `UPDATE Backlog SET description = '${description}', completeBy = '${completeBy}', notes = '${notes}', category = ${category}, isComplete = ${isComplete}, location = '${location}' WHERE taskId = ${taskId};`
+    var query1 = `UPDATE Backlog SET status = '${status}', description = '${description}', completeBy = '${completeBy}', notes = '${notes}', category = ${category}, isComplete = ${isComplete}, location = '${location}' WHERE taskId = ${taskId};`
     con.query(query1, function (err1, result, fields) {
 
         if (!err1) {
@@ -1580,6 +1652,41 @@ function updateBacklogTask(request, response){
         }
     });
 }
+
+app.patch('/backlog/status', updateBacklogTaskStatus);
+function updateBacklogTaskStatus(request, response){
+    var data = request.body;
+
+    var taskId = data.taskId;
+    var status = data.status;
+
+    //var userId = data.userId;
+
+    var query1 = `UPDATE Backlog SET status = '${status}' WHERE taskId = ${taskId};`
+    con.query(query1, function (err1, result, fields) {
+
+        if (!err1) {
+            //console.log(result);
+            response.setHeader('Access-Control-Allow-Origin', '*');
+                    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                    response.statusCode = 200;
+                    //response.statusMessage = userId;
+                    //response.send("updated Goal successfully");
+                    response.sendStatus(200);
+
+        }
+        else {
+            response.setHeader('Access-Control-Allow-Origin', '*');
+            // // Request methods you wish to allow
+            response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+            response.statusCode = 500;
+            //console.log(err1);
+            response.send("error updating event");
+        }
+    });
+}
+
+
 
 app.delete('/backlog/:id', deleteBacklogTask);
 function deleteBacklogTask(request, response){
@@ -1638,17 +1745,11 @@ function scheduleTask(request, response){
     });
 }
 
-app.post('/backlog/unscheduletask', unscheduletask);
+app.post('/backlog/unscheduletask', unscheduletask); //the case when the backlog item is not on the calendar
 function unscheduletask(request, response){
-    //first delete the event with eventId, then update task by removing scheduled date and the calendar item ref
     var data = request.body;
-    var eventId = data.eventId;
     var taskId = data.taskId;
-
-    var query = `DELETE FROM ScheduledEvents WHERE eventId = ${eventId};`
   
-    con.query(query, function(err, result, field){
-      if (!err){
           //update task by removing scheduled date and the calendar item ref
 var query1 = `UPDATE Backlog SET scheduledDate = null, calendarItem = null WHERE taskId = ${taskId};`
     con.query(query1, function (err1, result, fields) {
@@ -1671,10 +1772,48 @@ var query1 = `UPDATE Backlog SET scheduledDate = null, calendarItem = null WHERE
             //console.log(err1);
             response.send("error unscheduling task");
         }
+    });   
+}
+
+app.post('/calendar/unscheduletask', unscheduleCalendarTask);
+function unscheduleCalendarTask(request, response){
+    //first delete the event with eventId, then update task by removing scheduled date and the calendar item ref
+    var data = request.body;
+    var eventId = data.eventId;
+    var taskId = data.taskId;
+    console.log(taskId);
+
+    var query = `DELETE FROM ScheduledEvents WHERE eventId = ${eventId};`
+  
+    con.query(query, function(err, result, field){
+      if (!err){
+          //update task by removing scheduled date and the calendar item ref
+// var query1 = `UPDATE Backlog SET scheduledDate = null, calendarItem = null WHERE taskId = ${taskId};`
+var query1 = `UPDATE Backlog SET calendarItem = -1 WHERE taskId = ${taskId};`
+    con.query(query1, function (err1, result, fields) {
+
+        if (!err1) {
+            //console.log(result);
+            response.setHeader('Access-Control-Allow-Origin', '*');
+                    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                    response.statusCode = 200;
+                    //response.statusMessage = userId;
+                    //response.send("updated Goal successfully");
+                    response.sendStatus(200);
+
+        }
+        else {
+            response.setHeader('Access-Control-Allow-Origin', '*');
+            // // Request methods you wish to allow
+            response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+            response.statusCode = 500;
+            console.log(err1);
+            response.send("error unscheduling task");
+        }
     });
       }
       else {
-        //console.log(err);
+        console.log(err);
         response.setHeader('Access-Control-Allow-Origin', '*');
         // // Request methods you wish to allow
         response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -1684,6 +1823,118 @@ var query1 = `UPDATE Backlog SET scheduledDate = null, calendarItem = null WHERE
     })
     
 }
+
+/****************** Free Flow Routes **********************/
+app.patch('/user/freeflow', updateFreeFlowSession); //the case when the backlog item is not on the calendar
+function updateFreeFlowSession(request, response){
+    var data = request.body;
+    var userId = data.userId;
+    var action = data.action;
+    var endTime = data.end;
+    var currentTask = data.currentTask;
+
+    if(action == "start"){
+        var query1 = `UPDATE Users SET freeflowsessionends = '${endTime}' WHERE userId = ${userId};`
+        con.query(query1, function (err1, result, fields) {
+    
+            if (!err1) {
+                //console.log(result);
+                response.setHeader('Access-Control-Allow-Origin', '*');
+                        response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                        response.statusCode = 200;
+                        //response.statusMessage = userId;
+                        //response.send("updated Goal successfully");
+                        response.sendStatus(200);
+    
+            }
+            else {
+                response.setHeader('Access-Control-Allow-Origin', '*');
+                // // Request methods you wish to allow
+                response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                response.statusCode = 500;
+                console.log(err1);
+                response.send("error starting free flow task");
+            }
+        });   
+
+    }
+    else if(action == "end") {
+        var query1 = `UPDATE Users SET freeflowsessionends = null WHERE userId = ${userId};`
+        con.query(query1, function (err1, result, fields) {
+    
+            if (!err1) {
+                //console.log(result);
+                response.setHeader('Access-Control-Allow-Origin', '*');
+                        response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                        response.statusCode = 200;
+                        //response.statusMessage = userId;
+                        //response.send("updated Goal successfully");
+                        response.sendStatus(200);
+    
+            }
+            else {
+                response.setHeader('Access-Control-Allow-Origin', '*');
+                // // Request methods you wish to allow
+                response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                response.statusCode = 500;
+                //console.log(err1);
+                response.send("error ending free flow task");
+            }
+        });
+    }
+    else { //update current task
+        if(currentTask == -1){ //current task has been removed
+            var query1 = `UPDATE Users SET currentTaskWorkingOn = null WHERE userId = ${userId};`
+            con.query(query1, function (err1, result, fields) {
+        
+                if (!err1) {
+                    //console.log(result);
+                    response.setHeader('Access-Control-Allow-Origin', '*');
+                            response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                            response.statusCode = 200;
+                            //response.statusMessage = userId;
+                            //response.send("updated Goal successfully");
+                            response.sendStatus(200);
+        
+                }
+                else {
+                    response.setHeader('Access-Control-Allow-Origin', '*');
+                    // // Request methods you wish to allow
+                    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                    response.statusCode = 500;
+                    //console.log(err1);
+                    response.send("error ending free flow task");
+                }
+            });
+        }
+        else {
+            var query1 = `UPDATE Users SET currentTaskWorkingOn = ${currentTask} WHERE userId = ${userId};`
+            con.query(query1, function (err1, result, fields) {
+        
+                if (!err1) {
+                    //console.log(result);
+                    response.setHeader('Access-Control-Allow-Origin', '*');
+                            response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                            response.statusCode = 200;
+                            //response.statusMessage = userId;
+                            //response.send("updated Goal successfully");
+                            response.sendStatus(200);
+        
+                }
+                else {
+                    response.setHeader('Access-Control-Allow-Origin', '*');
+                    // // Request methods you wish to allow
+                    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                    response.statusCode = 500;
+                    //console.log(err1);
+                    response.send("error ending free flow task");
+                }
+            });
+
+        }
+    }
+}
+
 
 /****************** Habit Routes **********************/
 
