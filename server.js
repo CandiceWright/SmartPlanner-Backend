@@ -1862,7 +1862,7 @@ function updateFreeFlowSession(request, response){
 
     }
     else if(action == "end") {
-        var query1 = `UPDATE Users SET freeflowsessionends = null WHERE userId = ${userId};`
+        var query1 = `UPDATE Users SET freeflowsessionends = null,currentTaskWorkingOn = null WHERE userId = ${userId};`
         con.query(query1, function (err1, result, fields) {
     
             if (!err1) {
