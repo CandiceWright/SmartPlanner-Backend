@@ -710,11 +710,14 @@ function changePassword(request, response){
 app.patch('/user/receipt', updateReceipt);
 function updateReceipt(request, response){
     var data = request.body;
-    var userId = data.userId;
+    //var userId = data.userId;
+    var email = data.email;
     var receipt = data.receipt;
   
     con.connect(function (err) {
-        var query1 = `UPDATE Users SET receipt = '${receipt}' WHERE userId = ${userId};`
+        // var query1 = `UPDATE Users SET receipt = '${receipt}' WHERE userId = ${userId};`
+        var query1 = `UPDATE Users SET receipt = '${receipt}' WHERE email = '${email}';`
+
         con.query(query1, function (err2, result, fields) {
             if (!err2) {
                 response.setHeader('Access-Control-Allow-Origin', '*');
