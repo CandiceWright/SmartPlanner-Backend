@@ -167,8 +167,8 @@ function validateSubscription(request, response){
     //https://sandbox.itunes.apple.com/verifyReceipt
     axios.post('https://buy.itunes.apple.com/verifyReceipt', reqJson)
     .then((res) => {
-        console.log(`Status: ${res.status}`);
-        console.log('Body: ', res.data);
+        //console.log(`Status: ${res.status}`);
+        //console.log('Body: ', res.data);
         response.setHeader('Access-Control-Allow-Origin', '*');
         response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
         response.statusCode = 200
@@ -731,6 +731,36 @@ function updateReceipt(request, response){
                 response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
                 response.statusCode = 404;
                 response.send("email update unsuccessful");
+            }
+        });
+    });
+}
+
+app.patch('/user/premium', updatePremium);
+function updatePremium(request, response){
+    console.log("I am in premium func");
+    var data = request.body;
+    //var userId = data.userId;
+    var user = data.user;
+    var isPremium = data.isPremium;
+  
+    con.connect(function (err) {
+        // var query1 = `UPDATE Users SET receipt = '${receipt}' WHERE userId = ${userId};`
+        var query1 = `UPDATE Users SET isPremium = ${isPremium} WHERE userId = ${user};`
+
+        con.query(query1, function (err2, result, fields) {
+            if (!err2) {
+                response.setHeader('Access-Control-Allow-Origin', '*');
+                response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                console.log(result);
+                response.sendStatus(200)
+            }
+            else {
+                console.log(err2);
+                response.setHeader('Access-Control-Allow-Origin', '*');
+                response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+                response.statusCode = 500;
+                response.send("premium status update unsuccessful");
             }
         });
     });
