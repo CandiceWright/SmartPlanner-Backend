@@ -165,7 +165,7 @@ function validateSubscription(request, response){
     });
     //in production this should be https://buy.itunes.apple.com/verifyReceipt
     //https://sandbox.itunes.apple.com/verifyReceipt
-    axios.post('https://sandbox.itunes.apple.com/verifyReceipt', reqJson)
+    axios.post('https://buy.itunes.apple.com/verifyReceipt', reqJson)
     .then((res) => {
         //console.log(`Status: ${res.status}`);
         //console.log('Body: ', res.data);
