@@ -2212,6 +2212,8 @@ function contactUs(request, response){
   var message = data.message;
   console.log("printing name in contact us");
   console.log(name);
+  console.log(data);
+  console.log(request);
 
   var transporter = nodemailer.createTransport({
     service: 'gmail',
