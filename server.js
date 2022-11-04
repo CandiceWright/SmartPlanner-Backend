@@ -2205,13 +2205,16 @@ function deleteDefinition(request, response){
 
 /************* Website! Contact Us ******************/
 
-app.post('/contactUs', cors({
-    allowedHeaders: ["authorization", "Content-Type"], // you can change the headers
-    exposedHeaders: ["authorization"], // you can change the headers
-    origin: "*",
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    preflightContinue: false
-  }), contactUs);
+app.options('/contactUs', 
+    cors({
+        allowedHeaders: ["authorization", "Content-Type"], // you can change the headers
+        //exposedHeaders: ["authorization"], // you can change the headers
+        origin: true,
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+        //preflightContinue: true
+      }
+));
+app.post('/contactUs', contactUs);
 function contactUs(request, response){
   data = request.body;
   var name = data.name;
