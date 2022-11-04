@@ -12,6 +12,7 @@ const http = require('http');
 const https = require('https');
 const express = require('express');
 const axios = require('axios');
+var cors = require('cors')
 
 const app = express();
 var bodyParser = require('body-parser');
@@ -2204,16 +2205,16 @@ function deleteDefinition(request, response){
 
 /************* Website! Contact Us ******************/
 
-app.post('/contactUs', contactUs);
+app.post('/contactUs', cors(), contactUs);
 function contactUs(request, response){
   data = request.body;
   var name = data.name;
   var email = data.email;
   var message = data.message;
-  console.log("printing name in contact us");
-  console.log(name);
-  console.log(data);
-  console.log(request);
+  //console.log("printing name in contact us");
+  //console.log(name);
+  //console.log(data);
+  //console.log(request);
 
   var transporter = nodemailer.createTransport({
     service: 'gmail',
