@@ -2210,6 +2210,8 @@ function contactUs(request, response){
   var name = data.name;
   var email = data.email;
   var message = data.message;
+  console.log("printing name in contact us");
+  console.log(name);
 
   var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -2223,7 +2225,7 @@ function contactUs(request, response){
     from: 'info@thevshoot.com',
     to: 'info@thevshoot.com',
     subject: 'New message from ' + name + ' with email ' + email,
-    text: email
+    text: message
   };
 
   transporter.sendMail(mailOptions, function(error, info){
