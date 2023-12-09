@@ -1,12 +1,3 @@
-// var express = require('express');
-// const app = express();
-// var server = require('http').Server(app);
-// var port = process.env.PORT || 7343;
-// var server = app.listen(port, listen);
-// var bodyParser = require('body-parser');
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
-
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
@@ -19,8 +10,8 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
 // Certificate
-const privateKey = fs.readFileSync('/etc/letsencrypt/live/serve-anotherplanit.com/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/etc/letsencrypt/live/serve-anotherplanit.com/fullchain.pem', 'utf8');
+const privateKey = fs.readFileSync('', 'utf8');
+const certificate = fs.readFileSync('', 'utf8');
 
 const credentials = {
   key: privateKey,
