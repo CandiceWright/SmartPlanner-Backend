@@ -46,20 +46,10 @@ var bcrypt = require('bcrypt');
 var db_config = {
     host: "another-planit-database.cs3oengx7cdn.us-east-1.rds.amazonaws.com",
     user: "admin",
-    password: "michcan8200",
+    password: "",
     database: "AnotherPlanitDb",
     charset: 'utf8mb4_unicode_ci'
 }
-
-
-//for dev environment
-// var db_config = {
-//     host: "localhost",
-//     user: "root",
-//     password: "michcan8200",
-//     database: "PlannerAppDb",
-//     charset: 'utf8mb4_unicode_ci'
-// }
 
 var con;
 
